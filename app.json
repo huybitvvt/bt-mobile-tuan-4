@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Student Manager",
+    "slug": "bt-mobile-tuan-4",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.huybitvvt.studentmanager",
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
+    },
+    "android": {
+      "package": "com.huybitvvt.studentmanager",
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "locales": {
+      "vi": "./locales/vi.json",
+      "en": "./locales/en.json"
+    },
+    "plugins": ["expo-localization", "./plugins/withLocalizedAppName"],
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
