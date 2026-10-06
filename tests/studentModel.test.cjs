@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const loadSource = require('./loadSource.cjs');
-const { cleanStudent, validateStudent, decodeStudents, searchStudents } = loadSource('src/studentModel.js');
+const { cleanStudent, validateStudent, decodeStudents, isUploadedAvatar } = loadSource('src/studentModel.js');
 const record = { id: 'student-1', fullName: 'Nguyễn Minh An', studentId: 'BIT240115',
   email: 'an@example.com', avatarUrl: 'https://example.com/an.jpg' };
 
@@ -38,18 +38,23 @@ test('Load empty storage and round-trip full records', () => {
   assert.deepEqual(decodeStudents(JSON.stringify([record])), [record]);
 });
 
+test('Uploaded JPEG avatars validate and survive the storage round-trip; temporary file URIs do not', () => {
+  const uploaded = { ...record, avatarUrl: 'data:image/jpeg;base64,/9j/2Q==' };
+  assert.ok(isUploadedAvatar(uploaded.avatarUrl));
+  assert.deepEqual(validateStudent(uploaded, []), {});
+  assert.deepEqual(decodeStudents(JSON.stringify([uploaded])), [uploaded]);
+  for (const avatarUrl of ['blob:temporary', 'file:///cache/avatar.jpg', 'data:text/html;base64,AAAA',
+    'data:image/jpeg;base64,', 'data:image/jpeg;base64,/9j/!',
+    `data:image/jpeg;base64,/9j/${'A'.repeat(128 * 1024)}`]) {
+    assert.equal(isUploadedAvatar(avatarUrl), false);
+    assert.equal(validateStudent({ ...record, avatarUrl }, []).avatarUrl, 'avatarInvalid');
+  }
+});
+
 test('Corrupt or incomplete stored data is rejected instead of silently replacing it', () => {
   for (const raw of ['{', '{}', 'null', '[null]', JSON.stringify([{ id: '1' }]), JSON.stringify([{ ...record, email: '' }])]) {
     assert.throws(() => decodeStudents(raw));
   }
   assert.throws(() => decodeStudents(JSON.stringify([record, record])));
   assert.throws(() => decodeStudents(JSON.stringify([record, { ...record, id: '2', studentId: 'bit240115' }])));
-});
-
-test('Search accepts Vietnamese text without accents, student ID and email', () => {
-  assert.equal(searchStudents([record], 'nguyen minh').length, 1);
-  assert.equal(searchStudents([record], 'bit240').length, 1);
-  assert.equal(searchStudents([record], 'an@example').length, 1);
-  assert.equal(searchStudents([record], 'missing').length, 0);
-  assert.equal(searchStudents([{ ...record, fullName: 'Đặng An' }], 'dang').length, 1);
 });

@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import React from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Avatar, Button, Icon, IconButton } from '../components/UI';
-import { searchStudents } from '../studentModel';
 import { colors, common } from '../theme';
 
 export default function StudentList({ students, t, notice, busy, onView, onAdd, onEdit, onDelete }) {
-  const [query, setQuery] = useState('');
-  const filtered = searchStudents(students, query);
   return (
     <View style={common.page}>
       <View style={[common.content, common.section]}>
@@ -17,20 +14,14 @@ export default function StudentList({ students, t, notice, busy, onView, onAdd, 
             <Text style={common.subtitle}>{t('subtitle')}</Text>
           </View>
         </View>
-        <View style={styles.search}>
-          <Icon name="search" color={colors.muted} />
-          <TextInput accessibilityLabel={t('search')} placeholder={t('search')}
-            placeholderTextColor={colors.muted} value={query} onChangeText={setQuery}
-            style={styles.searchInput} autoCorrect={false} />
-        </View>
         <View style={styles.sectionHeading}>
           <Text style={styles.listTitle}>{t('listTitle')}</Text>
           <Text style={styles.count}>{t('studentCount', { count: students.length })}</Text>
         </View>
       </View>
       {notice ? <Text accessibilityLiveRegion="polite" style={common.notice}>{t(notice)}</Text> : null}
-      <FlatList data={filtered} keyExtractor={(item) => item.id}
-        keyboardShouldPersistTaps="handled" contentContainerStyle={[common.content, styles.list, !filtered.length && common.fill]}
+      <FlatList data={students} keyExtractor={(item) => item.id}
+        contentContainerStyle={[common.content, styles.list, !students.length && common.fill]}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Pressable accessibilityRole="button" accessibilityLabel={t('viewStudent', { name: item.fullName })}
@@ -50,9 +41,9 @@ export default function StudentList({ students, t, notice, busy, onView, onAdd, 
         )}
         ListEmptyComponent={(
           <View style={styles.empty}>
-            <View style={styles.emptyIcon}><Icon name={query ? 'search' : 'users'} size={34} color={colors.primary} /></View>
-            <Text style={styles.emptyTitle}>{t(query ? 'noResults' : 'emptyTitle')}</Text>
-            <Text style={styles.emptyText}>{t(query ? 'noResultsDescription' : 'emptyDescription')}</Text>
+            <View style={styles.emptyIcon}><Icon name="users" size={34} color={colors.primary} /></View>
+            <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
+            <Text style={styles.emptyText}>{t('emptyDescription')}</Text>
           </View>
         )}
       />
@@ -66,9 +57,6 @@ export default function StudentList({ students, t, notice, busy, onView, onAdd, 
 const styles = StyleSheet.create({
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   brandIcon: { width: 52, height: 52, borderRadius: 16, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  search: { marginTop: 24, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14,
-    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 12 },
-  searchInput: { flex: 1, paddingVertical: 14, color: colors.text, fontSize: 14, minHeight: 48 },
   sectionHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 24 },
   listTitle: { flexShrink: 1, color: colors.text, fontSize: 17, fontWeight: '700' },
   count: { color: colors.primary, fontSize: 12, fontWeight: '600', paddingHorizontal: 10, paddingVertical: 6,

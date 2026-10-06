@@ -1,5 +1,11 @@
 export const STORAGE_KEY = '@bt-mobile-tuan-4/students:v1';
 
+export function isUploadedAvatar(uri) {
+  return typeof uri === 'string' && uri.length <= 128 * 1024
+    && /^data:image\/jpeg;base64,\/9j\/[A-Za-z0-9+/]*={0,2}$/.test(uri)
+    && uri.slice(uri.indexOf(',') + 1).length % 4 === 0;
+}
+
 export function cleanStudent(values) {
   return Object.fromEntries(['fullName', 'studentId', 'email', 'avatarUrl'].map(
     (field) => [field, String(values[field] || '').trim()],
@@ -19,7 +25,8 @@ export function validateStudent(values, students, editingId = null) {
   if (!student.email) errors.email = 'emailRequired';
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(student.email)) errors.email = 'emailInvalid';
   if (!student.avatarUrl) errors.avatarUrl = 'avatarRequired';
-  else if (!/^https?:\/\/[^\s/?#]+(?:[/?#][^\s]*)?$/i.test(student.avatarUrl)) errors.avatarUrl = 'avatarInvalid';
+  else if (!isUploadedAvatar(student.avatarUrl)
+    && !/^https?:\/\/[^\s/?#]+(?:[/?#][^\s]*)?$/i.test(student.avatarUrl)) errors.avatarUrl = 'avatarInvalid';
   return errors;
 }
 
@@ -36,13 +43,4 @@ export function decodeStudents(raw) {
     throw new Error('Duplicate student storage');
   }
   return students;
-}
-
-export function searchStudents(students, query) {
-  const normalize = (text) => text.toLowerCase().normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
-  const search = normalize(query.trim());
-  return students.filter((student) => normalize(
-    `${student.fullName} ${student.studentId} ${student.email}`,
-  ).includes(search));
 }

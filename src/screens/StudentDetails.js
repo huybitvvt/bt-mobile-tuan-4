@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Avatar, Button, Header, Icon } from '../components/UI';
+import { isUploadedAvatar } from '../studentModel';
 import { colors, common } from '../theme';
 
 export default function StudentDetails({ student, t, busy, notice, onBack, onEdit, onDelete }) {
@@ -19,8 +20,10 @@ export default function StudentDetails({ student, t, busy, notice, onBack, onEdi
             <View key={field} style={styles.infoRow}>
               <View style={styles.infoIcon}><Icon name={icon} color={colors.primary} /></View>
               <View style={common.fill}>
-                <Text style={styles.label}>{t(field)}</Text>
-                <Text selectable style={styles.value}>{student[field]}</Text>
+                <Text style={styles.label}>{t(field === 'avatarUrl' ? 'avatar' : field)}</Text>
+                <Text selectable style={styles.value}>
+                  {field === 'avatarUrl' && isUploadedAvatar(student[field]) ? t('avatarDevice') : student[field]}
+                </Text>
               </View>
             </View>
           ))}

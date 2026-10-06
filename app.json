@@ -20,7 +20,14 @@
       "vi": "./locales/vi.json",
       "en": "./locales/en.json"
     },
-    "plugins": ["expo-localization", "./plugins/withLocalizedAppName"],
+    "plugins": [
+      "expo-localization", "./plugins/withLocalizedAppName",
+      ["expo-image-picker", {
+        "photosPermission": "Allow Student Manager to choose a student avatar from your photos.",
+        "cameraPermission": false,
+        "microphonePermission": false
+      }]
+    ],
     "web": {
       "bundler": "metro"
     }

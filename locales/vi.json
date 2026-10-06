@@ -1,3 +1,4 @@
 {
-  "CFBundleDisplayName": "Quản lý sinh viên"
+  "CFBundleDisplayName": "Quản lý sinh viên",
+  "NSPhotoLibraryUsageDescription": "Cho phép Quản lý sinh viên chọn ảnh avatar từ thư viện ảnh của bạn."
 }

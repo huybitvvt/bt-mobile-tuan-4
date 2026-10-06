@@ -1,3 +1,4 @@
 {
-  "CFBundleDisplayName": "Student Manager"
+  "CFBundleDisplayName": "Student Manager",
+  "NSPhotoLibraryUsageDescription": "Allow Student Manager to choose a student avatar from your photos."
 }
